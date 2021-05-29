@@ -1,0 +1,76 @@
+:root {
+    
+  
+    --sizing-fontsize-base: 12px;
+    --sizing-whitespace-base: 1.5em;
+  
+    --sizing-fontsize-tablet: 14px;
+    --sizing-fontsize-laptop: 16px;
+    --sizing-fontsize-desktop: 18px;
+    --sizing-fontsize-huge: 20px;
+
+    --sizing-basic-border:1px;
+  }
+  * {
+    padding: 0;
+    margin: 0;
+  }
+  html {
+    box-sizing: border-box;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    box-sizing: inherit;
+  }
+  
+  /* Typography */
+  
+  html {
+    font: var(--sizing-fontsize-base) / 1.5 "Georgia", serif;
+  }
+  
+  @media (min-width: 600px) {
+    html {
+      font-size: var(--sizing-fontsize-tablet);
+    }
+  }
+  @media (min-width: 1260px) {
+    html {
+      font-size: var(--sizing-fontsize-laptop);
+    }
+  }
+  @media (min-width: 1420px) {
+    html {
+      font-size: var(--sizing-fontsize-desktop);
+    }
+  }
+  @media (min-width: 1660px) {
+    html {
+      font-size: var(--sizing-fontsize-huge);
+    }
+  }
+  
+  p,
+  ul,
+  ol,
+  dl,
+  tablele {
+    margin-bottom: var(--sizing-whitespace-base);
+  }
+  
+  ul,
+  ol {
+    padding-left: var(--sizing-whitespace-base);
+  }
+  
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0 0 calc(var(--sizing-whitespace-base) / 3) 0;
+  }
+  

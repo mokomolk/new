@@ -1,0 +1,22 @@
+.main-nav {
+border: solid var(--color-basic-border);
+border-width: var(--sizing-basic-border) 0;
+}
+
+.main-nav ul {
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+.main-nav ul li {
+    display: block;
+    list-style: none;
+}
+
+.main-nav a {
+    display: block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    color: var(--color-main-link);
+    font-size: var(--sizing-fontsize-base);
+}
