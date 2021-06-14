@@ -22,8 +22,8 @@ title: Site
 email: moko75@hotmail.com
 description: site
 destination: docs
-baseurl: ""
- # baseurl: "/new" # the subpath of your site, e.g. /blog
+# baseurl: ""
+baseurl: "/new" # the subpath of your site, e.g. /blog
 # url: "https://mokomolk.github.io/new/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username:  jekyll

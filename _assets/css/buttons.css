@@ -1,0 +1,14 @@
+.button {
+    display: block;
+    border-radius: 0.3em;
+    background:red;
+    padding: 0.5em 1em;
+}
+.button-primary {
+    margin-right: auto;
+    font-weight: bold;
+}
+.button-primary:hover {
+    background: #a00;
+    color: blueviolet;
+}

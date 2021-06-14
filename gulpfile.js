@@ -19,8 +19,8 @@ gulp.task("css", function () {
 
 // Jekyll
 function jekyll() {
-	return cp.spawn("bundle", ["exec", "jekyll", "build"], { stdio: "inherit" });
-  }
+	return cp.spawn("bundle", ["exec", "jekyll", "build"], { stdio: "inherit", shell: true });
+  };
 
 
 

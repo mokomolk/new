@@ -1,16 +1,4 @@
-:root {
-    
-  
-    --sizing-fontsize-base: 12px;
-    --sizing-whitespace-base: 1.5em;
-  
-    --sizing-fontsize-tablet: 14px;
-    --sizing-fontsize-laptop: 16px;
-    --sizing-fontsize-desktop: 18px;
-    --sizing-fontsize-huge: 20px;
 
-    --sizing-basic-border: 1px;
-  }
   * {
     padding: 0;
     margin: 0;
