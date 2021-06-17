@@ -1,62 +1,84 @@
-"use strict";
+const { src, dest, watch, series, parallel } = require('gulp');
 
-let gulp = require("gulp"),
-  autoprefixer = require("gulp-autoprefixer"),
-  exec = require("gulp-exec"),
-  browserSync = require("browser-sync").create(),
-  sass = require("gulp-sass"),
-  cp = require("child_process");
 
-gulp.task("sass", function () {
-  return gulp
-    .src("_assets/scss/*.scss")
-    .pipe(sass().on("error", sass.logError))
-    .pipe(autoprefixer())
-    .pipe(gulp.dest("./docs/css/"))
-    .pipe(browserSync.stream({ match: "**/*.css" }));
-});
+
+
+const sass = require('gulp-sass');
+
+const autoprefixer = require('autoprefixer');
+
+
+
+const cp = require("child_process");
+
+const browserSync = require('browser-sync').create();
+
+// File paths
+
+const files = {
+    scssPath: '_assets/**/*.scss',
+    cssPath: "./docs/css/",
+    jsPath: 'assets/js/main.js',
+   
+}
+
+
+// Sass task: compiles the style.scss file into style.css
+function scssTask(){
+    return src(files.scssPath)
+        
+        .pipe(sass().on('error', sass.logError))
+        
+       
+        .pipe(dest("./docs/css/")) // put final CSS in dist folder
+        .pipe(browserSync.reload({stream:true}))
+}
+
+
+
+
 
 // Jekyll
-gulp.task("jekyll-dev", function () {
-  return cp.spawn("bundle", ["exec", "jekyll", "build --baseurl ''"], {
-    stdio: "inherit",
-    shell: true,
-  });
-});
-
-// Jekyll
-gulp.task("jekyll", function () {
-  return cp.spawn("bundle", ["exec", "jekyll", "build"], {
-    stdio: "inherit",
-    shell: true,
-  });
-});
-
-gulp.task("watch", function () {
-  browserSync.init({
-    server: {
-      baseDir: "./docs/",
-    },
-  });
-
-  gulp.watch("_assets/scss/*.scss", gulp.series("sass"));
-
-  gulp
-    .watch([
-      "./*.html",
-      "./*.yml",
-      "./_includes/*.html",
-      "./_layouts/*.html",
-      "./_posts/**/*.*",
-    ])
-    .on("change", gulp.series("jekyll", "sass"));
-
-  gulp.watch("docs/**/*.html").on("change", browserSync.reload);
-  gulp.watch("docs/**/*.js").on("change", browserSync.reload);
-});
+function jekyll() {
+    return cp.spawn("bundle", ["exec", "jekyll", "build"], { stdio: "inherit", shell: true });
+}
 
 
+// Watch task: watch SCSS and JS files for changes
+// If any change, run scss and js tasks simultaneously
+function watchTask(){
 
-gulp.task("default", gulp.series("jekyll", "sass", "watch"));
+    watch([files.scssPath], parallel(scssTask, browserSyncReload));
+    
+    watch(['_includes/**', '_layouts/**/*', 'pages/**'], series(jekyll, browserSyncReload));
+   
+
+}
+
+//browsersynce function
+function browserSyncServe(done) {
+    browserSync.init({
+        server: {
+            baseDir: "./docs/"
+        }
+    });
+    done();
+}
+
+function browserSyncReload(done) {
+    browserSync.reload();
+    done();
+}
+
+// exports.build = build;
+// exports.default = series(clean, build);
+
+exports.default = series(
+    parallel(jekyll, scssTask),
+    browserSyncServe,
+    watchTask
+);
+
+// exports.default = series(parallel(scssTask, jsTask, browserSyncServe), watchTask);
 
 
