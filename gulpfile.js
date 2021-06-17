@@ -1,58 +1,61 @@
 "use strict";
 
 let gulp = require("gulp"),
-  autoprefixer = require("gulp-autoprefixer"),
-  exec = require("gulp-exec"),
-  browserSync = require("browser-sync").create(),
-  cp = require("child_process");
+	autoprefixer = require("gulp-autoprefixer"),
+	exec = require("gulp-exec"),
+	browserSync = require('browser-sync').create(),
+	sass = require('gulp-sass'),
+	cp = require("child_process");
 
-
-
-gulp.task("css", function () {
-  return gulp
-    .src("_assets/css/**/*.css")
-    .pipe(autoprefixer())
-    .pipe(gulp.dest("./docs/css/"))
-    .pipe(browserSync.stream({ match: "**/*.css" }));
+gulp.task("sass", function() {
+	return gulp.src( '_assets/scss/*.scss' )
+	
+		.pipe( sass().on('error', sass.logError) )
+		.pipe( autoprefixer() )
+		
+		.pipe( gulp.dest( './docs/css/' ) )
+		.pipe( browserSync.stream({ match: '**/*.css' }) )
+	;
 });
-
 
 // Jekyll
-function jekyll() {
+gulp.task("jekyll-dev", function() {
+	return cp.spawn("bundle", ["exec", "jekyll", "build --baseurl ''"], { stdio: "inherit", shell: true });
+});
+
+// Jekyll
+gulp.task("jekyll", function() {
 	return cp.spawn("bundle", ["exec", "jekyll", "build"], { stdio: "inherit", shell: true });
-  };
-
-
-
-gulp.task("jekyll", function () {
-
-   return gulp
-    .src(["./*.html", "./layout/**/*.html", "./_posts/**/*.markdown"])
-    .pipe(exec("jekyll build"))
-    .pipe(exec.reporter());
 });
 
-gulp.task("watch", function () {
-  browserSync.init({
-    server: {
-      baseDir: "./docs/",
-    },
-  });
+gulp.task("watch", function() {
 
-  gulp.watch("_assets/css/**/*.css", gulp.series("css"));
+	browserSync.init({
+		server: {
+            baseDir: "./docs/"
+		}
+	});
 
-  gulp.watch("docs/**/*.html").on("change", browserSync.reload);
-  gulp.watch("docs/**/*.js").on("change", browserSync.reload);
+	gulp.watch( '_assets/scss/*.scss', gulp.series('sass') );
 
-  gulp.watch(
-	[
-	  "./*.html",
-	  "./_includes/*.html",
-	  "./_layouts/*.html",
-	  "./_posts/**/*"
-	]
-  ).on('change', gulp.series('jekyll', "css") 
-  );
+	gulp.watch(
+		[
+			"./*.html",
+			"./*.yml",
+			"./_includes/*.html",
+			"./_layouts/*.html",
+			"./_posts/**/*.*"
+		]
+	).on('change', gulp.series('jekyll', 'sass') );
+
+	gulp.watch( 'docs/**/*.html' ).on('change', browserSync.reload );
+	gulp.watch( 'docs/**/*.js' ).on('change', browserSync.reload );
 });
 
-gulp.task("default", gulp.series("css", "watch"));
+
+gulp.task("deploy", gulp.series('jekyll', 'sass', function() {
+	return cp.spawn('git status && git commit -am "Update" && git pull && git push', { stdio: "inherit", shell: true });
+}));
+
+gulp.task("default", gulp.series('jekyll', 'sass', 'watch'));
+
