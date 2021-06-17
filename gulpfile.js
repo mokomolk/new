@@ -1,42 +1,43 @@
-const { src, dest, watch, series, parallel } = require('gulp');
 
+let gulp = require("gulp");
+let sass = require("gulp-sass");
+let autoprefixer = require("gulp-autoprefixer");
 
+var css = {
+  src: '_assets/**/*.scss',
+  dest: './docs/css/',
+  filename: 'site.scss'
+};
 
+var js = {
+  src: '_assets/**/*.js',
+  dest: './docs/',
+  filename: '*.js'
+};
 
-const sass = require('gulp-sass');
-
-const autoprefixer = require('autoprefixer');
-
-
-
-const cp = require("child_process");
-
-const browserSync = require('browser-sync').create();
-
-// File paths
-
-const files = {
-    scssPath: '_assets/**/*.scss',
-    cssPath: "./docs/css/",
-    jsPath: 'assets/js/main.js',
-   
+function style() {
+  return (
+    gulp
+      .src(css.src)
+      
+      .pipe(sass())
+      .on("error", sass.logError)
+      .pipe(autoprefixer())
+      .pipe(gulp.dest('./docs/css/'))
+      
+      
+  );
 }
 
-
-// Sass task: compiles the style.scss file into style.css
-function scssTask(){
-    return src(files.scssPath)
-        
-        .pipe(sass().on('error', sass.logError))
-        
-       
-        .pipe(dest("./docs/css/")) // put final CSS in dist folder
-        .pipe(browserSync.reload({stream:true}))
+function script() {
+  return (
+    gulp
+      
+      .pipe(gulp.dest('./docs/'))
+      
+      
+  );
 }
-
-
-
-
 
 // Jekyll
 function jekyll() {
@@ -44,41 +45,14 @@ function jekyll() {
 }
 
 
-// Watch task: watch SCSS and JS files for changes
-// If any change, run scss and js tasks simultaneously
-function watchTask(){
 
-    watch([files.scssPath], parallel(scssTask, browserSyncReload));
-    
-    watch(['_includes/**', '_layouts/**/*', 'pages/**'], series(jekyll, browserSyncReload));
-   
-
+function watch(){
+  gulp.watch(css.src, style);
+  gulp.watch(js.src, script);
 }
 
-//browsersynce function
-function browserSyncServe(done) {
-    browserSync.init({
-        server: {
-            baseDir: "./docs/"
-        }
-    });
-    done();
-}
-
-function browserSyncReload(done) {
-    browserSync.reload();
-    done();
-}
-
-// exports.build = build;
-// exports.default = series(clean, build);
-
-exports.default = series(
-    parallel(jekyll, scssTask),
-    browserSyncServe,
-    watchTask
-);
-
-// exports.default = series(parallel(scssTask, jsTask, browserSyncServe), watchTask);
+exports.css = style;
+exports.js = script;
+exports.default = watch;
 
 
