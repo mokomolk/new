@@ -2,6 +2,9 @@
 let gulp = require("gulp");
 let sass = require("gulp-sass");
 let autoprefixer = require("gulp-autoprefixer");
+let cp = require("child_process");
+const { series } = require("gulp");
+let browserSync = require('browser-sync').create();
 
 var css = {
   src: '_assets/**/*.scss',
@@ -44,15 +47,28 @@ function jekyll() {
     return cp.spawn("bundle", ["exec", "jekyll", "build"], { stdio: "inherit", shell: true });
 }
 
+//browsersynce function
 
 
-function watch(){
-  gulp.watch(css.src, style);
-  gulp.watch(js.src, script);
+function browserSyncReload(done) {
+  browserSync.reload();
+  done();
 }
 
-exports.css = style;
-exports.js = script;
-exports.default = watch;
+function browserSyncServe(done) {
+  browserSync.init({
+      server: {
+          baseDir: "./docs/"
+      }
+  });
+  gulp.watch([css.src, , js.src], series(jekyll, browserSyncReload));
+  gulp.watch(style);
+}
+
+
+
+exports.css = (css.src, style)
+exports.default = browserSyncServe;
+
 
 
